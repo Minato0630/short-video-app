@@ -1,0 +1,261 @@
+/* =========================
+   EXISTING APP CSS (UNCHANGED)
+========================= */
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   GLOBAL THEME EXTENSIONS
+========================= */
+
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* =========================
+   PROFILE PAGE
+========================= */
+
+.profile-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-header h2 {
+  margin: 5px 0;
+  font-size: 26px;
+}
+
+.profile-username {
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.profile-bio {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.profile-anime {
+  font-size: 14px;
+  color: #ff4d4d;
+}
+
+/* =========================
+   EDIT PROFILE
+========================= */
+
+.profile-edit input,
+.profile-edit textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #1a1a1a;
+  color: white;
+}
+
+.profile-edit textarea {
+  resize: none;
+  height: 80px;
+}
+
+.profile-edit button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #ff4d4d;
+  color: white;
+  cursor: pointer;
+}
+
+/* =========================
+   PROFILE TABS
+========================= */
+
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.profile-tabs button {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.profile-tabs button.active {
+  background: #ff4d4d;
+}
+
+.profile-tabs button:hover {
+  opacity: 0.8;
+}
+
+/* =========================
+   PROFILE VIDEOS
+========================= */
+
+.profile-videos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* =========================
+   CENTER MESSAGE
+========================= */
+
+.profile-center-msg {
+  color: #aaa;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* =========================
+   REELS SUPPORT (SAFE)
+========================= */
+
+.reels-feed {
+  height: calc(100vh - 60px);
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.reel {
+  height: calc(100vh - 60px);
+  position: relative;
+  background: black;
+  scroll-snap-align: start;
+}
+
+.reel video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: black;
+}
+
+/* =========================
+   REEL USERNAME
+========================= */
+
+.reel-user {
+  position: absolute;
+  bottom: 90px;
+  left: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* =========================
+   REEL ICONS
+========================= */
+
+.reel-icons {
+  position: absolute;
+  right: 15px;
+  bottom: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reel-icons button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.reel-icons button.active {
+  background: #ff4d4d;
+}
+
+/* =========================
+   REEL PROGRESS BAR
+========================= */
+
+.reel-progress {
+  position: absolute;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  background: rgba(255,255,255,0.2);
+}
+
+.reel-progress div {
+  height: 100%;
+  background: #ff4d4d;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+  .profile-page {
+    padding: 10px;
+  }
+
+  .profile-tabs {
+    flex-wrap: wrap;
+  }
+}
