@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";&#10;import API_URL from "../../utils/api.js";
+import axios from "axios";
+import API_URL from "../utils/api";
 import Reel from "../components/Reel";
 
 export default function UserProfile() {
@@ -42,7 +43,7 @@ export default function UserProfile() {
   ========================= */
   const fetchUser = async () => {
     const res = await axios.get(
-      `http://localhost:5000/api/users/${username}`
+      `${API_URL}/api/users/${username}`
     );
 
     setUser(res.data);
@@ -56,7 +57,7 @@ export default function UserProfile() {
   ========================= */
   const fetchVideos = async () => {
     const res = await axios.get(
-      "http://localhost:5000/api/videos"
+      `${API_URL}/api/videos`
     );
     setVideos(res.data);
   };
@@ -78,7 +79,7 @@ export default function UserProfile() {
     if (!loggedUser) return;
 
     await axios.put(
-      `http://localhost:5000/api/users/${username}`,
+      `${API_URL}/api/users/${username}`,
       {
         loggedInUser: loggedUser.username,
         name,
@@ -105,7 +106,7 @@ export default function UserProfile() {
       setUploadingAvatar(true);
 
       await axios.put(
-        `http://localhost:5000/api/users/avatar/${username}`,
+        `${API_URL}/api/users/avatar/${username}`,
         formData,
         {
           headers: {
@@ -164,7 +165,7 @@ export default function UserProfile() {
             className="avatar-img"
             src={
               user?.avatar && user.avatar !== ""
-                ? `http://localhost:5000${user.avatar}`
+                ? `${API_URL}${user.avatar}`
                 : "/default-avatar.png"
             }
             alt="avatar"

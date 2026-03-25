@@ -2,14 +2,17 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import User from "../models/User.js";
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /* =========================
    MULTER CONFIG (AVATAR)
 ========================= */
-const avatarDir = "uploads/avatars";
+const avatarDir = path.join(__dirname, "..", "uploads", "avatars");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

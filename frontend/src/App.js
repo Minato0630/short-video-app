@@ -8,6 +8,7 @@ import Upload from "./pages/Upload";
 import UserProfile from "./pages/UserProfile"; // ✅ FIX: IMPORT ADDED
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import API_URL from "./utils/api";
 
 function App() {
   const [videos, setVideos] = useState([]);

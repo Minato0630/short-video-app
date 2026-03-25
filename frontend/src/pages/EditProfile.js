@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import API_URL from "../utils/api";
 
 export default function EditProfile({ user }) {
   const [name, setName] = useState(user.name);
@@ -8,7 +9,7 @@ export default function EditProfile({ user }) {
 
   const save = async () => {
     await axios.put(
-      `http://localhost:5000/api/users/${user.username}`,
+      `${API_URL}/api/users/${user.username}`,
       {
         loggedInUser: user.username,
         name,

@@ -2,16 +2,25 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import Video from "../models/Video.js";
 import User from "../models/User.js";
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, "..", "uploads");
 
 /* =========================
    MULTER CONFIG
 ========================= */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
+  destination: (req, file, cb) => {
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    cb(null, uploadsDir);
+  },
   filename: (req, file, cb) =>
     cb(null, Date.now() + "-" + file.originalname)
 });
@@ -65,7 +74,7 @@ router.delete("/:id", async (req, res) => {
   if (video.username !== req.body.username)
     return res.status(403).json("Not allowed");
 
-  const filePath = path.join("uploads", video.filename);
+  const filePath = path.join(uploadsDir, video.filename);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
   await Video.findByIdAndDelete(req.params.id);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";&#10;import API_URL from "../utils/api.js";
+import axios from "axios";
+import API_URL from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Reel({ video, onAction }) {
@@ -87,7 +88,7 @@ export default function Reel({ video, onAction }) {
     <div className="reel">
       <video
         ref={videoRef}
-        src={`http://localhost:5000/uploads/${video.filename}`}
+        src={`${API_URL}/uploads/${video.filename}`}
         muted
         loop
         playsInline
@@ -108,7 +109,7 @@ export default function Reel({ video, onAction }) {
         <button className={liked ? "active" : ""} onClick={likeVideo}>❤️</button>
         <button className={saved ? "active" : ""} onClick={saveVideo}>⭐</button>
         <button onClick={() => window.open(
-          `http://localhost:5000/uploads/${video.filename}`
+          `${API_URL}/uploads/${video.filename}`
         )}>⬇️</button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import API_URL from "./utils/api";
 
 export default function VideoList({ videos, refresh }) {
   const [editId, setEditId] = useState(null);
@@ -21,7 +22,7 @@ export default function VideoList({ videos, refresh }) {
 
   const saveEdit = async () => {
     await axios.put(
-      `http://localhost:5000/api/videos/${editId}`,
+      `${API_URL}/api/videos/${editId}`,
       { title, description }
     );
     setEditId(null);
@@ -33,7 +34,7 @@ export default function VideoList({ videos, refresh }) {
     if (!window.confirm("Delete this video?")) return;
 
     await axios.delete(
-      `http://localhost:5000/api/videos/${id}`,
+      `${API_URL}/api/videos/${id}`,
       { data: { username: user.username } }
     );
     refresh();
