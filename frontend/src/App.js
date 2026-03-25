@@ -17,7 +17,7 @@ function App() {
   =============================== */
   const loadVideos = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/videos");
+const res = await axios.get(`${API_URL}/api/videos`);
       setVideos(res.data);
     } catch (err) {
       console.error("Failed to load videos", err);

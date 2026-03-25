@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "axios";&#10;import API_URL from "../../utils/api.js";
 import Reel from "../components/Reel";
 
 export default function UserProfile() {

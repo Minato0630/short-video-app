@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios from "axios";&#10;import API_URL from "../utils/api.js";
 import { useNavigate } from "react-router-dom";
 
 export default function Reel({ video, onAction }) {
@@ -62,7 +62,7 @@ export default function Reel({ video, onAction }) {
     if (!user) return;
 
     await axios.put(
-      `http://localhost:5000/api/videos/like/${video._id}`,
+`${API_URL}/api/videos/like/${video._id}`,
       { username: user.username }
     );
 
@@ -75,7 +75,7 @@ export default function Reel({ video, onAction }) {
     if (!user) return;
 
     await axios.put(
-      `http://localhost:5000/api/videos/save/${video._id}`,
+`${API_URL}/api/videos/save/${video._id}`,
       { username: user.username }
     );
 

@@ -15,7 +15,7 @@ export default function Register() {
   const register = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/register",
+`${API_URL}/api/auth/register`,
         data
       );
 

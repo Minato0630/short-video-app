@@ -47,7 +47,6 @@ export default function VideoList({ videos, refresh }) {
           {isPlayable(video.filename) ? (
             <video controls>
               <source
-                src={`http://localhost:5000/uploads/${video.filename}`}
               />
             </video>
           ) : (

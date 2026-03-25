@@ -26,7 +26,7 @@ export default function UploadVideo({ onUpload }) {
       formData.append("username", user?.username || "guest");
 
       await axios.post(
-        "http://localhost:5000/api/videos/upload",
+`${API_URL}/api/videos/upload`,
         formData,
         {
           headers: {
