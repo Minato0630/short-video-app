@@ -29,30 +29,45 @@ export default function Login() {
     }
   };
 
+  const handleSubmit = e => {
+    e.preventDefault();
+    handleLogin();
+  };
+
   return (
-    <div className="auth-box">
+    <form className="auth-box" onSubmit={handleSubmit}>
       <h3>LOGIN</h3>
 
+      <label htmlFor="login-username">Username</label>
       <input
+        id="login-username"
+        name="username"
         placeholder="Username"
         value={data.username}
         onChange={e =>
           setData({ ...data, username: e.target.value })
         }
+        autoComplete="username"
+        required
       />
 
+      <label htmlFor="login-password">Password</label>
       <input
+        id="login-password"
+        name="password"
         type="password"
         placeholder="Password"
         value={data.password}
         onChange={e =>
           setData({ ...data, password: e.target.value })
         }
+        autoComplete="current-password"
+        required
       />
 
-      <button onClick={handleLogin}>
+      <button type="submit">
         Login
       </button>
-    </div>
+    </form>
   );
 }
