@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "start:backend": "node backend/server.js",
+    "start:frontend": "npm --prefix frontend start",
+    "build:frontend": "npm --prefix frontend run build"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

@@ -87,16 +87,9 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 
 if (!process.env.VERCEL) {
-  connectDB()
-    .then(() => {
-      console.log("✅ MongoDB Atlas connected");
-      app.listen(PORT, () => {
-        console.log(`🚀 Server running on http://localhost:${PORT}`);
-      });
-    })
-    .catch(error => {
-      console.error("❌ MongoDB Atlas error:", error);
-    });
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
 }
 
 export default app;
