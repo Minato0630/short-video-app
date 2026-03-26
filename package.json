@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "scripts": {
     "start:backend": "node backend/server.js",
     "start:frontend": "npm --prefix frontend start",
