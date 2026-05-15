@@ -4,10 +4,6 @@
   "outputDirectory": "frontend/build",
   "rewrites": [
     {
-      "source": "/uploads/(.*)",
-      "destination": "/api/uploads/$1"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
