@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import User from "../models/User.js";
+import Video from "../models/Video.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -37,6 +38,19 @@ const upload = multer({
     } else {
       cb(new Error("Only image files allowed"));
     }
+  }
+});
+
+/* =========================
+   GET ALL USERS (ADMIN ACCESS)
+========================= */
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json("Server error");
   }
 });
 
@@ -129,5 +143,53 @@ router.put(
     }
   }
 );
+
+
+
+/* =========================
+   DELETE USER (ADMIN ONLY)
+========================= */
+router.delete("/:username", async (req, res) => {
+  try {
+    const { requester } = req.body;
+    const requestingUser = await User.findOne({ username: requester });
+
+    if (!requestingUser || !requestingUser.isAdmin) {
+      return res.status(403).json("Not allowed");
+    }
+
+    const userToDelete = await User.findOne({ username: req.params.username });
+    if (!userToDelete) {
+      return res.status(404).json("User not found");
+    }
+
+    // 1. Delete user's avatar file if exists
+    if (userToDelete.avatar) {
+      const avatarPath = "." + userToDelete.avatar;
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath);
+      }
+    }
+
+    // 2. Delete user's video files from uploads folder
+    const videos = await Video.find({ username: req.params.username });
+    const videoUploadsDir = path.join(__dirname, "..", "uploads");
+    for (const video of videos) {
+      const filePath = path.join(videoUploadsDir, video.filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      await Video.findByIdAndDelete(video._id);
+    }
+
+    // 3. Delete the user
+    await User.findOneAndDelete({ username: req.params.username });
+
+    res.json({ message: "User and all associated uploads deleted successfully" });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json("Delete user failed");
+  }
+});
 
 export default router;

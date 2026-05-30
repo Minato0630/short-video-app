@@ -142,6 +142,8 @@ export default function UserProfile() {
     v => v.username === username
   );
 
+  const totalViews = uploaded.reduce((sum, v) => sum + (v.views || 0), 0);
+
   const liked = videos.filter(v =>
     user.likedVideos?.includes(v._id)
   );
@@ -250,6 +252,10 @@ export default function UserProfile() {
 
             <p className="anime">
               ❤️ Favourite Anime: {user.favouriteAnime || "—"}
+            </p>
+
+            <p className="total-views">
+              👁️ Total Video Views: {totalViews}
             </p>
 
             {isOwner && (

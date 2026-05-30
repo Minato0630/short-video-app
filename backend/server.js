@@ -38,7 +38,15 @@ async function connectDB() {
   }
 }
 
+// Preconnect to MongoDB on startup
+connectDB().catch(err => console.error("❌ Preconnection failed:", err));
+
 const app = express();
+
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.url}`);
+  next();
+});
 
 /* =========================
    MIDDLEWARE
@@ -59,7 +67,9 @@ app.use("/api/uploads", express.static(uploadsDir));
 ========================= */
 app.use("/api", async (req, res, next) => {
   try {
-    await connectDB();
+    if (mongoose.connection.readyState !== 1) {
+      await connectDB();
+    }
     next();
   } catch (error) {
     console.error("❌ MongoDB Atlas error:", error);

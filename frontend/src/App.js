@@ -8,6 +8,8 @@ import Upload from "./pages/Upload";
 import UserProfile from "./pages/UserProfile"; // ✅ FIX: IMPORT ADDED
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard";
+import DownloadVideo from "./pages/DownloadVideo";
 import API_URL from "./utils/api";
 
 function App() {
@@ -18,7 +20,7 @@ function App() {
   =============================== */
   const loadVideos = async () => {
     try {
-const res = await axios.get(`${API_URL}/api/videos`);
+      const res = await axios.get(`${API_URL}/api/videos`);
       setVideos(res.data);
     } catch (err) {
       console.error("Failed to load videos", err);
@@ -51,6 +53,12 @@ const res = await axios.get(`${API_URL}/api/videos`);
           path="/user/:username"
           element={<UserProfile />}
         />
+
+        {/* ADMIN DASHBOARD */}
+        <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* DOWNLOAD PAGE */}
+        <Route path="/download/:id" element={<DownloadVideo />} />
 
         {/* AUTH */}
         <Route path="/login" element={<Login />} />

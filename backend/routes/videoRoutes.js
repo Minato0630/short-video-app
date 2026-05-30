@@ -65,20 +65,41 @@ router.get("/", async (req, res) => {
 });
 
 /* =========================
-   DELETE VIDEO (OWNER)
+   GET VIDEO BY ID
+========================= */
+router.get("/:id", async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id);
+    if (!video) return res.status(404).json("Video not found");
+    res.json(video);
+  } catch (err) {
+    res.status(500).json("Server error");
+  }
+});
+
+/* =========================
+   DELETE VIDEO (OWNER OR ADMIN)
 ========================= */
 router.delete("/:id", async (req, res) => {
-  const video = await Video.findById(req.params.id);
-  if (!video) return res.status(404).json("Not found");
+  try {
+    const video = await Video.findById(req.params.id);
+    if (!video) return res.status(404).json("Not found");
 
-  if (video.username !== req.body.username)
-    return res.status(403).json("Not allowed");
+    const user = await User.findOne({ username: req.body.username });
+    const isAdmin = user && user.isAdmin;
 
-  const filePath = path.join(uploadsDir, video.filename);
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    if (video.username !== req.body.username && !isAdmin)
+      return res.status(403).json("Not allowed");
 
-  await Video.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+    const filePath = path.join(uploadsDir, video.filename);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+    await Video.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    console.error("Delete video error:", err);
+    res.status(500).json("Delete failed");
+  }
 });
 
 /* =========================
@@ -152,8 +173,6 @@ router.put("/save/:id", async (req, res) => {
   }
 });
 
-
-
 /* =========================
    VIEW COUNT
 ========================= */
@@ -162,6 +181,25 @@ router.put("/view/:id", async (req, res) => {
     $inc: { views: 1 }
   });
   res.json({ success: true });
+});
+
+/* =========================
+   DOWNLOAD VIDEO FILE
+========================= */
+router.get("/download/:filename", (req, res) => {
+  const filePath = path.join(uploadsDir, req.params.filename);
+  if (fs.existsSync(filePath)) {
+    const { title, quality, format } = req.query;
+    const cleanTitle = (title || "video").trim().replace(/[^a-zA-Z0-9]/g, "_");
+    const selectedQuality = quality || "720p";
+    const originalExt = path.extname(req.params.filename).substring(1) || "mp4";
+    const selectedFormat = format || originalExt;
+    
+    const downloadName = `${cleanTitle}_${selectedQuality}.${selectedFormat}`;
+    res.download(filePath, downloadName);
+  } else {
+    res.status(404).send("File not found");
+  }
 });
 
 export default router;

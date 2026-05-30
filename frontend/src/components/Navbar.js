@@ -26,6 +26,12 @@ export default function Navbar() {
           </Link>
         )}
 
+        {user && user.isAdmin && (
+          <Link to="/admin" style={{ color: "#ffc107" }}>
+            🛡️ Admin
+          </Link>
+        )}
+
         {!user && <Link to="/login">Login</Link>}
         {!user && <Link to="/register">Register</Link>}
 

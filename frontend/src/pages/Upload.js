@@ -12,5 +12,5 @@ export default function Upload({ onUpload }) {
 
   if (!user) return null;
 
-  return <UploadVideo />;
+  return <UploadVideo onUpload={onUpload} />;
 }

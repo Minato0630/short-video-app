@@ -18,9 +18,12 @@ export default function Reel({ video, onAction }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
+  const [views, setViews] = useState(video.views || 0);
+  const hasViewed = useRef(false);
 
   /* INIT STATE */
   useEffect(() => {
+    setViews(video.views || 0);
     if (!user) return;
     setLiked(video.likes?.includes(user.username) || false);
     setSaved(video.savedBy?.includes(user.username) || false);
@@ -36,6 +39,16 @@ export default function Reel({ video, onAction }) {
         if (entry.isIntersecting) {
           el.muted = true;
           el.play().catch(() => {});
+          
+          if (!hasViewed.current) {
+            hasViewed.current = true;
+            // Increment view count in database
+            axios.put(`${API_URL}/api/videos/view/${video._id}`)
+              .then(() => {
+                setViews(prev => prev + 1);
+              })
+              .catch(err => console.error("Error logging view:", err));
+          }
         } else {
           el.pause();
         }
@@ -63,7 +76,7 @@ export default function Reel({ video, onAction }) {
     if (!user) return;
 
     await axios.put(
-`${API_URL}/api/videos/like/${video._id}`,
+      `${API_URL}/api/videos/like/${video._id}`,
       { username: user.username }
     );
 
@@ -76,12 +89,33 @@ export default function Reel({ video, onAction }) {
     if (!user) return;
 
     await axios.put(
-`${API_URL}/api/videos/save/${video._id}`,
+      `${API_URL}/api/videos/save/${video._id}`,
       { username: user.username }
     );
 
     setSaved(prev => !prev);
     onAction && onAction();
+  };
+
+  /* ADMIN DELETE */
+  const deleteVideoAdmin = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this video as Admin?");
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${API_URL}/api/videos/${video._id}`, {
+        data: { username: user.username }
+      });
+      alert("Video deleted successfully.");
+      if (onAction) {
+        onAction();
+      } else {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error("Delete video failed:", err);
+      alert("Failed to delete video");
+    }
   };
 
   return (
@@ -106,11 +140,33 @@ export default function Reel({ video, onAction }) {
       </div>
 
       <div className="reel-icons">
+        <div className="reel-view-count" style={{
+          textAlign: "center",
+          fontSize: "12px",
+          color: "#ddd",
+          backgroundColor: "rgba(0,0,0,0.6)",
+          padding: "6px 8px",
+          borderRadius: "15px",
+          marginBottom: "5px",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          justifyContent: "center"
+        }} title="Views">
+          👁️ {views}
+        </div>
         <button className={liked ? "active" : ""} onClick={likeVideo}>❤️</button>
         <button className={saved ? "active" : ""} onClick={saveVideo}>⭐</button>
-        <button onClick={() => window.open(
-          `${API_URL}/uploads/${video.filename}`
-        )}>⬇️</button>
+        <button onClick={() => navigate(`/download/${video._id}`)}>⬇️</button>
+        {user && user.isAdmin && (
+          <button
+            onClick={deleteVideoAdmin}
+            style={{ backgroundColor: "#ff1a1a" }}
+            title="Delete Video (Admin)"
+          >
+            🗑️
+          </button>
+        )}
       </div>
     </div>
   );

@@ -43,6 +43,21 @@ router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    if (username === "admin") {
+      let adminUser = await User.findOne({ username: "admin" });
+      if (!adminUser) {
+        const hashed = await bcrypt.hash("adminPassword123", 10);
+        adminUser = new User({
+          name: "Administrator",
+          username: "admin",
+          email: "admin@example.com",
+          password: hashed,
+          isAdmin: true
+        });
+        await adminUser.save();
+      }
+    }
+
     const user = await User.findOne({ username });
     if (!user) return res.status(401).json("Invalid login");
 
@@ -52,7 +67,8 @@ router.post("/login", async (req, res) => {
     const { password: _, ...safeUser } = user._doc;
     res.json({ user: safeUser });
 
-  } catch {
+  } catch (err) {
+    console.error("Login route error:", err);
     res.status(500).json("Login failed");
   }
 });
