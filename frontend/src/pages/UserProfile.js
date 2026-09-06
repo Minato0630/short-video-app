@@ -4,6 +4,68 @@ import axios from "axios";
 import API_URL from "../utils/api";
 import Reel from "../components/Reel";
 
+const getAvatarSrc = (avatar) => {
+  if (!avatar) return "/default-avatar.png";
+  if (avatar.startsWith("data:") || avatar.startsWith("http://") || avatar.startsWith("https://")) {
+    return avatar;
+  }
+  return `${API_URL}${avatar}`;
+};
+
+const compressImage = (file, maxWidth = 400, maxHeight = 400, quality = 0.82) => {
+  return new Promise((resolve) => {
+    if (!file || !file.type || !file.type.startsWith("image/")) {
+      return resolve(file);
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+            const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 export default function UserProfile() {
   const { username } = useParams();
 
@@ -36,7 +98,18 @@ export default function UserProfile() {
   const [anime, setAnime] = useState("");
 
   const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  useEffect(() => {
+    if (avatarFile) {
+      const url = URL.createObjectURL(avatarFile);
+      setAvatarPreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setAvatarPreview(null);
+    }
+  }, [avatarFile]);
 
   /* =========================
      FETCH USER
@@ -98,14 +171,16 @@ export default function UserProfile() {
   const uploadAvatar = async () => {
     if (!avatarFile || !loggedUser) return;
 
-    const formData = new FormData();
-    formData.append("avatar", avatarFile);
-    formData.append("loggedInUser", loggedUser.username);
-
     try {
       setUploadingAvatar(true);
 
-      await axios.put(
+      const optimizedFile = await compressImage(avatarFile);
+
+      const formData = new FormData();
+      formData.append("avatar", optimizedFile);
+      formData.append("loggedInUser", loggedUser.username);
+
+      const res = await axios.put(
         `${API_URL}/api/users/avatar/${username}`,
         formData,
         {
@@ -115,10 +190,21 @@ export default function UserProfile() {
         }
       );
 
+      // Update local storage user if owner
+      if (isOwner && loggedUser) {
+        const updated = { ...loggedUser, avatar: res.data.avatar };
+        localStorage.setItem("user", JSON.stringify(updated));
+      }
+
       setAvatarFile(null);
       fetchUser(); // SPA refresh
-    } catch {
-      alert("Avatar upload failed");
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+      const errMsg =
+        err.response?.data?.message ||
+        (typeof err.response?.data === "string" ? err.response?.data : "") ||
+        "Avatar upload failed";
+      alert(errMsg);
     } finally {
       setUploadingAvatar(false);
     }
@@ -165,11 +251,7 @@ export default function UserProfile() {
         <div className="avatar-box">
           <img
             className="avatar-img"
-            src={
-              user?.avatar && user.avatar !== ""
-                ? `${API_URL}${user.avatar}`
-                : "/default-avatar.png"
-            }
+            src={avatarPreview || getAvatarSrc(user?.avatar)}
             alt="avatar"
           />
 
@@ -193,13 +275,22 @@ export default function UserProfile() {
               </label>
 
               {avatarFile && (
-                <button
-                  className="btn-save"
-                  disabled={uploadingAvatar}
-                  onClick={uploadAvatar}
-                >
-                  {uploadingAvatar ? "Uploading…" : "Upload"}
-                </button>
+                <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginTop: "8px" }}>
+                  <button
+                    className="btn-save"
+                    disabled={uploadingAvatar}
+                    onClick={uploadAvatar}
+                  >
+                    {uploadingAvatar ? "Uploading…" : "Upload"}
+                  </button>
+                  <button
+                    className="btn-cancel"
+                    disabled={uploadingAvatar}
+                    onClick={() => setAvatarFile(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
               )}
             </>
           )}

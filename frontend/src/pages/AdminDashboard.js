@@ -242,7 +242,7 @@ export default function AdminDashboard() {
                           <img
                             src={
                               u.avatar
-                                ? `${API_URL}${u.avatar}`
+                                ? (u.avatar.startsWith("data:") || u.avatar.startsWith("http") ? u.avatar : `${API_URL}${u.avatar}`)
                                 : "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
                             }
                             alt="avatar"
